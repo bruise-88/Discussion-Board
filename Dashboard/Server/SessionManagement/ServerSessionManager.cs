@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Networking;
-using System.Diagnostics;
+﻿using Content;
 using Dashboard.Server.Summary;
-using Content;
+using Networking;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 
 namespace Dashboard.Server.SessionManagement
@@ -62,7 +60,7 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="user"> An object of type UserData </param>
         private void AddUserToSession(UserData user)
         {
-            lock(this)
+            lock (this)
             {
                 _sessionData.users.Add(user);
             }
@@ -128,12 +126,12 @@ namespace Dashboard.Server.SessionManagement
         {
             ChatContext[] allChats = _contentServer.SGetAllMessages().ToArray();
 
-            bool summarySaved = _summarizer.SaveSummary(allChats,0.5);
+            bool summarySaved = _summarizer.SaveSummary(allChats, 0.5);
 
-            if(summarySaved == true)
+            if (summarySaved == true)
             {
                 UserData user = new(receivedObject.username, receivedObject.userID);
-                SendDataToClient("endMeet",_sessionData, null, user);
+                SendDataToClient("endMeet", _sessionData, null, user);
             }
             // Cannot find telemetry factory yet.
         }
@@ -154,7 +152,7 @@ namespace Dashboard.Server.SessionManagement
                 Trace.WriteLine("IP Address is not valid, returning null");
                 return null;
             }
-            
+
             Trace.WriteLine("Returning the IP Address to the UX");
             //string ipAddress = meetAddress.Substring(0, meetAddress.IndexOf(':'));
             string ipAddress = meetAddress[0..meetAddress.IndexOf(':')];
@@ -217,9 +215,9 @@ namespace Dashboard.Server.SessionManagement
         /// </summary>
         public void NotifyTelemetryModule()
         {
-            for(int i=0;i<_telemetrySubscribers.Count;++i)
+            for (int i = 0; i < _telemetrySubscribers.Count; ++i)
             {
-                lock(this)
+                lock (this)
                 {
                     _telemetrySubscribers[i].OnAnalyticsChanged(_sessionData);
                 }
@@ -235,7 +233,7 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="socketObject"></param>
         public void OnClientJoined<T>(T socketObject)
         {
-            lock(this)
+            lock (this)
             {
                 userCount += 1;
             }
@@ -289,11 +287,11 @@ namespace Dashboard.Server.SessionManagement
         {
             // raise exception if the user is not in the session or the _sessionData is null
             List<UserData> users = _sessionData.users;
-            for(int i = 0; i < users.Count; ++i)
+            for (int i = 0; i < users.Count; ++i)
             {
-                if(users[i] == userToRemove)
+                if (users[i] == userToRemove)
                 {
-                    lock(this)
+                    lock (this)
                     {
                         _sessionData.users.RemoveAt(i);
                         break;
@@ -302,7 +300,7 @@ namespace Dashboard.Server.SessionManagement
             }
         }
 
-        private void SendDataToClient(string eventName,SessionData sessionData, SummaryData summaryData, UserData user)
+        private void SendDataToClient(string eventName, SessionData sessionData, SummaryData summaryData, UserData user)
         {
             ServerToClientData serverToClientData;
             lock (this)
@@ -322,7 +320,7 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="identifier"> The listener of the subscriber </param>
         public void Subcribe(ITelemetryNotifications listener)
         {
-            lock(this)
+            lock (this)
             {
                 _telemetrySubscribers.Add(listener);
             }
