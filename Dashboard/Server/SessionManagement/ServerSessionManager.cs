@@ -86,7 +86,7 @@ namespace Dashboard.Server.SessionManagement
             NotifyTelemetryModule();
 
             // serialize and broadcast the data back to the client side.
-            SendDataToClient("addClient", _sessionData, user);
+            SendDataToClient("addClient", _sessionData, null, user);
         }
 
         /// <summary>
@@ -113,6 +113,7 @@ namespace Dashboard.Server.SessionManagement
             // the plans are to take this input from the UX, it will be changed accordingly
             double amountOfSummary = 0.5;
 
+            //_contentServer.s
             // fetching all the chats from the content module.
             ChatContext[] allChatsTillNow = _contentServer.SGetAllMessages().ToArray();
 
@@ -132,7 +133,7 @@ namespace Dashboard.Server.SessionManagement
             if(summarySaved == true)
             {
                 UserData user = new(receivedObject.username, receivedObject.userID);
-                SendDataToClient("endMeet",_sessionData, user);
+                SendDataToClient("endMeet",_sessionData, null, user);
             }
             // Cannot find telemetry factory yet.
         }
@@ -175,7 +176,7 @@ namespace Dashboard.Server.SessionManagement
             SummaryData summaryData = CreateSummary();
             UserData user = new(receivedObject.username, receivedObject.userID);
 
-            SendDataToClient("getSummary", summaryData, user);
+            SendDataToClient("getSummary", null, summaryData, user);
         }
 
         /// <summary>
@@ -281,7 +282,7 @@ namespace Dashboard.Server.SessionManagement
             UserData userToRemove = new(receivedObject.username, receivedObject.userID);
             RemoveUserFromSession(userToRemove);
             NotifyTelemetryModule();
-            SendDataToClient("removeClient", _sessionData, userToRemove);
+            SendDataToClient("removeClient", _sessionData, null, userToRemove);
         }
 
         private void RemoveUserFromSession(UserData userToRemove)
@@ -301,15 +302,16 @@ namespace Dashboard.Server.SessionManagement
             }
         }
 
-        private void SendDataToClient(string eventName,IRecievedFromServer objectToSend, UserData user)
+        private void SendDataToClient(string eventName,SessionData sessionData, SummaryData summaryData, UserData user)
         {
             ServerToClientData serverToClientData;
             lock (this)
             {
-                serverToClientData = new ServerToClientData(eventName, objectToSend, user);
+                serverToClientData = new ServerToClientData(eventName, sessionData, summaryData, user);
             }
 
             string serializedSessionData = _serializer.Serialize<ServerToClientData>(serverToClientData);
+            Console.WriteLine(serializedSessionData);
             _communicator.Send(serializedSessionData, moduleIdentifier);
         }
 
