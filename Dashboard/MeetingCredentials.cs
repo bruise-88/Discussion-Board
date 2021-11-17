@@ -8,9 +8,6 @@ namespace Dashboard
 {
     public class MeetingCredentials
     {
-        public string ipAddress;
-        public int port;
-
         /// <summary>
         ///     Instances of this class will store the
         ///     credentrials required to join/start
@@ -22,5 +19,7 @@ namespace Dashboard
             ipAddress = address;
             port = portNumber;
         }
+        public string ipAddress;
+        public int port;
     }
 }

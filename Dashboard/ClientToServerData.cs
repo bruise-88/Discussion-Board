@@ -8,10 +8,6 @@ namespace Dashboard
 {
     public class ClientToServerData
     {
-        public string eventType;
-        public int userID;
-        public string username;
-
         /// <summary>
         ///     Parametric constructor to initialise the fields
         /// </summary>
@@ -30,6 +26,11 @@ namespace Dashboard
         /// </summary>
         public ClientToServerData()
         {
+
         }
+
+        public string eventType;
+        public string username;
+        public int userID;
     }
 }
