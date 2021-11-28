@@ -167,6 +167,15 @@ namespace Dashboard.Server.Telemetry{
             }
         }
 
+        public void CalculateTotalSincereUsersAndTotalChatCount(int totalChats, int totalUsers)
+        {
+            foreach(KeyValuePair<int,int> user_i in userIdChatCountDic){
+                totalChats+=user_i.Value;
+                // checks if it is not insincere
+                if(!insincereMembers.Contains(user_i.Key)) totalUsers+=1;
+            }
+        }
+
         /// <summary>
         ///     Used to simplify the ChatContext and saved all analytics when the session is over.
         /// </summary>
@@ -186,10 +195,7 @@ namespace Dashboard.Server.Telemetry{
                 // saving overall session summary
                 int totalChats=0;
                 int totalUsers=0;
-                foreach(KeyValuePair<int,int> user_i in userIdChatCountDic){
-                    totalChats+=user_i.Value;
-                    totalUsers+=1;
-                }
+                CalculateTotalSincereUsersAndTotalChatCount(totalChats,totalUsers);
                 // retrieve the previous server data till previous session
                 ServerDataToSave serverData = _persistence.RetrieveAllSeverData(); 
                 UpdateServerData(serverData, totalUsers, totalChats);
