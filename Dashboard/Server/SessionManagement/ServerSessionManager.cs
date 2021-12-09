@@ -110,10 +110,12 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="socketObject"></param>
         public void OnClientJoined<T>(T socketObject)
         {
-            //lock (this)
-            //{
-            //    userCount += 1;
-            //}
+            lock (this)
+            {
+                userCount += 1;
+                UserData tempUser = new ("dummy", userCount);
+                SendDataToClient("newID", null, null, null, tempUser);
+            }
 
             _communicator.AddClient(userCount.ToString(), socketObject);
         }
@@ -276,12 +278,10 @@ namespace Dashboard.Server.SessionManagement
         {
             lock (this)
             {
-                userCount += 1;
-
                 if (userCount == 1)
                     _telemetry = testmode ? new Telemetry.Telemetry(this) : TelemetryFactory.GetTelemetryInstance();
                 UserData user = new(username, userCount);
-                return user;
+               return user;
             }
         }
 

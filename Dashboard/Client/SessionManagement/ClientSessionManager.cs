@@ -143,6 +143,10 @@ namespace Dashboard.Client.SessionManagement
                     MeetingEnded?.Invoke();
                     return;
 
+                case "newID":
+                    SetClientID(deserializedObject);
+                    return;
+
                 default:
                     Trace.WriteLine("Received Invalid event type from the server");
                     return;
@@ -322,6 +326,11 @@ namespace Dashboard.Client.SessionManagement
             }
         }
 
+        private void SetClientID(ServerToClientData receivedData)
+        {
+            _user.userID = receivedData._user.userID;
+        }
+
         /// <summary>
         ///     Used to set/change the Client side UserData Object for testing and deubgging purposes.
         /// </summary>
@@ -399,7 +408,7 @@ namespace Dashboard.Client.SessionManagement
             // the old user (already present in the meeting) have their _user set.
             if (_user == null)
             {
-                _user = user;
+                _user.username = user.username;
 
                 Trace.WriteLine("[Client Dashboard] Client added to the client session.");
 
